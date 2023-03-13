@@ -17,13 +17,11 @@ import cn.meshed.cloud.rd.codegen.model.JavaParameter;
 import cn.meshed.cloud.rd.codegen.processor.AnnotationProcessor;
 import cn.meshed.cloud.rd.codegen.processor.GenerateEngine;
 import cn.meshed.cloud.rd.codegen.processor.PackageProcessor;
-import cn.meshed.cloud.rd.codegen.utils.JsonUtils;
 import cn.meshed.cloud.utils.AssertUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -84,8 +82,8 @@ public class GenerateClassExecuteImpl implements GenerateClassExecute {
         checkAdapter(adapter);
         JavaInterface javaInterface = getBaseJavaInterface(adapter);
         if (CollectionUtils.isNotEmpty(adapter.getMethods())) {
-            List<JavaMethod> methods = adapter.getMethods().stream().filter(Objects::nonNull)
-                    .map(this::buildMethodJavaMethod).collect(Collectors.toList());
+            Set<JavaMethod> methods = adapter.getMethods().stream().filter(Objects::nonNull)
+                    .map(this::buildMethodJavaMethod).collect(Collectors.toSet());
             javaInterface.setMethods(methods);
         }
         javaInterface.setUri(adapter.getUri());
@@ -117,9 +115,8 @@ public class GenerateClassExecuteImpl implements GenerateClassExecute {
         checkRpc(rpc);
         JavaInterface javaInterface = getBaseJavaInterface(rpc);
         if (CollectionUtils.isNotEmpty(rpc.getMethods())) {
-            List<JavaMethod> methods = rpc.getMethods().stream().filter(Objects::nonNull)
-                    .map(this::buildMethodJavaMethod).collect(Collectors.toList());
-            javaInterface.setMethods(methods);
+            Set<JavaMethod> methods = rpc.getMethods().stream().filter(Objects::nonNull)
+                    .map(this::buildMethodJavaMethod).collect(Collectors.toSet());
         }
         javaInterface.setImports(packageProcessor.scanJavaInterfacePackage(javaInterface));
         javaInterface.addImports(packageProcessor.scanMethodPackage(rpc.getMethods()));
@@ -166,6 +163,8 @@ public class GenerateClassExecuteImpl implements GenerateClassExecute {
         javaMethod.setResponse(method.getResponseData());
         javaMethod.setName(method.getName());
         javaMethod.setAnnotations(method.getAnnotations());
+        javaMethod.verification();
+
         return javaMethod;
     }
 
@@ -197,6 +196,7 @@ public class GenerateClassExecuteImpl implements GenerateClassExecute {
         javaParameter.setName(objectParameter.getName());
         javaParameter.setType(objectParameter.getType());
         javaParameter.setExplain(objectParameter.getExplain());
+        javaParameter.verification();
         return javaParameter;
     }
 
@@ -215,6 +215,7 @@ public class GenerateClassExecuteImpl implements GenerateClassExecute {
         javaInterface.setImports(objectDefinition.getImports());
         javaInterface.setVersion(objectDefinition.getVersion());
         javaInterface.setExplain(objectDefinition.getExplain());
+        javaInterface.verification();
         return javaInterface;
     }
 
@@ -245,6 +246,7 @@ public class GenerateClassExecuteImpl implements GenerateClassExecute {
         javaField.setType(objectField.getType());
         //生成注解
         javaField.setAnnotations(annotationProcessor.generateModelFieldAnnotation(objectField));
+        javaField.verification();
         return javaField;
     }
 
@@ -264,6 +266,7 @@ public class GenerateClassExecuteImpl implements GenerateClassExecute {
         javaModel.setPackageName(objectModel.getPackageName());
         javaModel.setVersion(objectModel.getVersion());
         javaModel.setImports(objectModel.getImports());
+        javaModel.verification();
         return javaModel;
     }
 }

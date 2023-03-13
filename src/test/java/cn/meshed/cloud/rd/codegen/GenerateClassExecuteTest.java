@@ -20,7 +20,8 @@ public class GenerateClassExecuteTest {
     private GenerateClassExecute generateClassExecute;
 
     @Before
-    public void init(){
+    public void init() {
+
         generateClassExecute = TestBeanFactory.newGenerateExecute();
     }
 
@@ -47,17 +48,29 @@ public class GenerateClassExecuteTest {
         System.out.println(code);
     }
 
-    @Test
-    public void generateAdapter(){
+    public void generateAdapter() {
         Adapter adapter = new Adapter();
         adapter.setAuthor("Vincent Vic");
         adapter.setDescription("Test");
         adapter.setClassName("ProjectAdapter");
         adapter.setUri("/test");
-        adapter.setPackageName("cn.meshed.cloud.rd.project");
+        adapter.setPackageName("cn.meshed.cloud.rd.project.ProjectAdapter");
         adapter.addImport("org.junit.Test");
         adapter.setVersion("1.0.0");
         adapter.setExplain("测试");
+        AdapterMethod adapterMethod = buildMockAdapterMethod("save");
+        AdapterMethod adapterMethod2 = buildMockAdapterMethod("edit");
+        AdapterMethod adapterMethod3 = buildMockAdapterMethod("details");
+        Set<AdapterMethod> adapterMethods = new HashSet<>();
+        adapterMethods.add(adapterMethod);
+        adapterMethods.add(adapterMethod2);
+        adapterMethods.add(adapterMethod3);
+        adapter.setMethods(adapterMethods);
+        String code = generateClassExecute.buildAdapter(adapter);
+        System.out.println(code);
+    }
+
+    private AdapterMethod buildMockAdapterMethod(String methodName) {
         ObjectParameter objectParameter = new ObjectParameter();
         objectParameter.setName("t1");
         objectParameter.setType("String");
@@ -79,15 +92,15 @@ public class GenerateClassExecuteTest {
         objectResponse.setSubGeneric("List");
         objectResponse.setDataType("String");
         adapterMethod.setObjectResponse(objectResponse);
-        adapterMethod.setName("test");
-        adapterMethod.setUri("/tt");
+        adapterMethod.setName(methodName);
+        adapterMethod.setUri("/" + methodName.toLowerCase());
         adapterMethod.setRequestType(RequestType.GET);
-        adapter.setMethods(Collections.singleton(adapterMethod));
-        String code = generateClassExecute.buildAdapter(adapter);
-        System.out.println(code);
+        return adapterMethod;
     }
+
     @Test
-    public void generateRpc(){
+    public void generateRpc() {
+
         Rpc rpc = new Rpc();
         rpc.setAuthor("Vincent Vic");
         rpc.setDescription("Test");

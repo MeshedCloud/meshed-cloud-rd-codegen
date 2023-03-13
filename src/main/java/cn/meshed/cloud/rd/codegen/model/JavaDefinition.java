@@ -1,10 +1,13 @@
 package cn.meshed.cloud.rd.codegen.model;
 
+import cn.meshed.cloud.utils.AssertUtils;
 import lombok.Data;
+import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -82,5 +85,33 @@ public class JavaDefinition {
         }
     }
 
+    /**
+     * 校验
+     */
+    public void verification() {
+        //包名中含类名设施处理特殊处理
+        AssertUtils.isTrue(StringUtils.isNotBlank(this.className),"类名不能为空");
+        AssertUtils.isTrue(StringUtils.isNotBlank(this.packageName),"包名不能为空");
+        //如果是类名结尾的默认被删除
+        if (this.packageName.endsWith(this.className)){
+            this.packageName = this.packageName.replace("."+this.className,"");
+        }
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof JavaDefinition)) {
+            return false;
+        }
+        JavaDefinition that = (JavaDefinition) o;
+        return getPackageName().equals(that.getPackageName()) && getClassName().equals(that.getClassName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getPackageName(), getClassName());
+    }
 }

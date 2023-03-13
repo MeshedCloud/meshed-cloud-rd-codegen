@@ -72,7 +72,7 @@ public class GenerateEngineTest {
         javaMethod.setExplain("测试");
         javaMethod.setResponse("void");
         javaMethod.setName("test");
-        javaInterface.setMethods(Collections.singletonList(javaMethod));
+        javaInterface.setMethods(Collections.singleton(javaMethod));
         String code = generateEngine.generate("adapter", javaInterface);
         System.out.println(code);
     }
