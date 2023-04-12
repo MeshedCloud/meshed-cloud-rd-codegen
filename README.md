@@ -128,6 +128,8 @@ public interface GenerateClassExecute {
      * @return 代码
      */
     String buildEnum(ObjectEnum objectEnum);
+
+
 }
 
 ```
